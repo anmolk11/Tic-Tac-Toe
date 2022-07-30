@@ -53,6 +53,15 @@ for(int i=0;i<3;i++){
 cout<<"\n";
 }
 
+
+int randomMove(){
+    int x = rand() % 8 + 1;
+    while(isTaken[x]){
+        x = rand() % 8 + 1;
+    }
+    return x;
+}
+
 void makeMove(int m,char x){
     grid[index[m].F][index[m].S]=x;
     isTaken[m]=1;
@@ -97,38 +106,73 @@ char Winner(){
 }
 
 
+int Menu(){
+    int x;
+    cout<<"Select game type : \n";
+    cout<<"1.Human v/s Human\n";
+    cout<<"2.Human v/s Computer\n";
+    // cout<<"3.Human v/s Computer[Hard]\n";
+
+    cout<<"\nEnter your choice : ";
+    cin>>x;
+
+    return x;
+}
+
+
+void playGame(int type,string player[]){
+    cout<<"\n          ------------------- "<<player[0]<<" v/s "<<player[1]<<" -------------------\n";
+    int t=9,m;
+    printTemp();
+    char x,w;
+    bool draw=true;
+    while(t--){
+        printGrid();
+        w=Winner();
+        if(w!=' '){
+            if(w=='X') cout<<"\n"<<player[0]<<" Won!\n";
+            else cout<<"\n"<<player[1]<<" Won!\n";
+            draw=false;
+            break;
+        }
+        again:
+        cout<<"\n"<<player[t%2]<<"'s move : ";
+        if(player[t%2] == "Computer") m = randomMove();
+        else cin>>m;
+        if(m>9||isTaken[m]){
+            if(m>9) cout<<"\nInvalid position. ";
+            else cout<<"\nPosition already taken. ";
+            cout<<"Select another position\n";
+            goto again;
+        }
+        x=(t%2)?'O':'X';
+        makeMove(m,x);
+    }
+    if(draw) cout<<"\nIts a draw!\n";
+}
+
+
 int main(){
 startGame();
-int t=9,m;
+
 string player[2];
-cout<<"Enter player 1 name : "; cin>>player[0];
-cout<<"\n";
-cout<<"Enter player 2 name : "; cin>>player[1];
-cout<<"\n          ------------------- "<<player[0]<<" v/s "<<player[1]<<" -------------------\n";
-printTemp();
-char x,w;
-bool draw=true;
-while(t--){
-    printGrid();
-    w=Winner();
-    if(w!=' '){
-        if(w=='X') cout<<"\n"<<player[0]<<" Won!\n";
-        else cout<<"\n"<<player[1]<<" Won!\n";
-        draw=false;
-        break;
-    }
-    again:
-    cout<<"\n"<<player[t%2]<<"'s move : ";
-    cin>>m;
-    if(m>9||isTaken[m]){
-        if(m>9) cout<<"\nInvalid position. ";
-        else cout<<"\nPosition already taken. ";
-        cout<<"Select another position\n";
-        goto again;
-    }
-    x=(t%2)?'O':'X';
-    makeMove(m,x);
+
+int x = Menu();
+
+if(x == 1){
+    cout<<"Enter player 1 name : "; cin>>player[0];
+    cout<<"\n";
+    cout<<"Enter player 2 name : "; cin>>player[1];
+    playGame(1,player);
 }
-if(draw) cout<<"\nIts a draw!\n";
+else if(x == 2){
+    cout<<"Enter player name : "; cin>>player[0];
+    player[1] = "Computer";
+    playGame(2,player);
+}
+else{
+
+}
+
 return 0;
 }
